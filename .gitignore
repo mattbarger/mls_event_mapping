@@ -1,5 +1,7 @@
-.Rproj.user
-.Rhistory
+#R Environment Information
+.Renviron.sh
 .RData
-.Ruserdata
+.RHistory
+.Rproj.user
+.DS_Store
 .Renviron
