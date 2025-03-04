@@ -38,7 +38,7 @@ theme_matt <- theme_minimal() +
     axis.text = element_text(family = "Fira Mono", size = 10),
     strip.text = element_text(family = "Fira Mono",  face = "bold", hjust = 0, size = 12),
     strip.background = element_rect(fill = black_hues[2], color = NA),
-    panel.grid.major = element_line(color = black_hues[1]),
+    panel.grid.major = element_line(color = black_hues[2]),
     panel.grid.minor = element_blank(),
     #panel.ontop = T,
     plot.background = element_rect(fill = "floralwhite", color = "floralwhite")
