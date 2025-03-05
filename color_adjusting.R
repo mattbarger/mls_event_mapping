@@ -37,7 +37,6 @@ adjust_color <- function(base_color, bg_color, ref_color, n_shades = 100, min_co
   rm(color_fix)
   rm(adjusted_shade)
 }
-adjust_color(minnesota, template_grass, template_black)
 
 ## Step 2: Example code. 
 ##
