@@ -7,7 +7,7 @@ library(tidyverse)
 library(DBI)
 library(RPostgres)
 options(scipen = 9999)
-
+readRenviron(".Renviron.sh")
 #Connect to the database
 conn <- DBI::dbConnect(RPostgres::Postgres(), 
                        dbname = Sys.getenv("ASA_dbname"), 

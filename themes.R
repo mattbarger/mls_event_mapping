@@ -1,6 +1,5 @@
 #Data Setup Document
 #Matt Barger
-rm(list = ls())
 #Load in Required Libraries
 library(tidyverse)
 library(worldfootballR)

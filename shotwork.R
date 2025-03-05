@@ -6,6 +6,8 @@ unzip('Data.Zip', exdir = "Source Data")
 
 csv_list <- list.files("Source Data", pattern = "\\.csv$")
 
+setwd("Source Data")
+
 csv_list |> 
   purrr::imap(~ assign(gsub("\\.csv$", "\\1", .x),
               read.csv(.x),
@@ -99,10 +101,12 @@ shot_poss |>
 
 
 sp1 <- shot_poss |>
-  left_join(team_index |> select(possession_team_id = team_id, possession_team = team_name, poss_abbv = team_abbreviation,
-                                 poss_primary = primary_color, poss_secondary = secondary_color)) |>
+  left_join(team_index |> left_join(color_start) |>
+              select(possession_team_id = team_id, possession_team = team_name, poss_abbv = team_abbreviation,
+                                 poss_primary = primary_adjusted, 
+                     poss_secondary = secondary_adjusted)) |>
   left_join(passes_per_shot_poss) |> 
-  filter(poss_abbv == "DCU") |> filter(game_date == max(game_date)) |>
+  filter(poss_abbv == "TOR") |> filter(game_date == max(game_date)) |>
   arrange(-sequence_xg, asa_in_game_order) |> 
   #filter(x != x2 & y != y2) |> 
   group_by(possession_chain_id) |> 
@@ -116,21 +120,22 @@ sp1 <- shot_poss |>
                                      ifelse(shot_outcome == "Blocked", 15,
                                             ifelse(shot_outcome == "Saved", 16, 19))))
 
-createPitch(x = 115, y = 80, grass_colour = black_hues[2], line_colour = black_hues[6]) +
+createPitch(x = 115, y = 80, grass_colour = black_hues[1], line_colour = black_hues[6]) +
+  #ggplot() +
   geom_segment(data = sp1 |> filter(type_name_adj != "Shot"),
     aes(x = x*1.15, y = y*0.8, xend = x2*1.15, yend = y2*0.8, 
-        #color = primary_color, 
-        alpha = sequence_xg), color = teal_hues[4], size = 2,
+        color = poss_primary, 
+        alpha = sequence_xg), size = 1.5,
                arrow = arrow(length = unit(1, "mm"))) +
   geom_segment(data = sp1 |> filter(type_name_adj != "Shot"),
                aes(x = x2*1.15, y = y2*0.8, xend = x2_adj*1.15, yend = y2_adj*0.8,
-                   #color = poss_primary, 
-                   alpha = sequence_xg), size = 2,color = teal_hues[4],
+                   color = poss_primary, 
+                   alpha = sequence_xg), size = 1.5,
                arrow = arrow(length = unit(1, "mm"))) +
   geom_point(data = sp1 |> filter(type_name_adj == "Shot" & shot_outcome!= "Goal"),
-             aes(x = x*1.15, y = y*0.8, size = xg_shooter, shape = shot_outcome, color = primary_color), stroke = 2, fill = black_hues[3]) +
+             aes(x = x*1.15, y = y*0.8, size = xg_shooter, shape = shot_outcome, color = poss_primary), stroke = 2, fill = black_hues[2]) +
   geom_point(data = sp1 |> filter(type_name_adj == "Shot" & shot_outcome == "Goal"),
-             aes(x = x*1.15, y = y*0.8, size = xg_shooter, color = primary_color,fill = secondary_color), shape = 21,
+             aes(x = x*1.15, y = y*0.8, size = xg_shooter, color = poss_secondary,fill = poss_primary), shape = 21,
              stroke = 2)+
   scale_size_binned(breaks = c(0, 0.06, 0.15, 0.33,1),range = c(2, 8), limits = c(0, 1)) +
   scale_alpha_binned(breaks = c(0, 0.06, 0.15, 0.33,1)) +
@@ -140,13 +145,13 @@ createPitch(x = 115, y = 80, grass_colour = black_hues[2], line_colour = black_h
   coord_flip() + scale_y_reverse() +
   guides(alpha = 'none', size = 'none') +
   theme_matt +
-  theme(aspect.ratio = 1,
+  theme(aspect.ratio = 115/80,
         axis.text = element_blank(), axis.title = element_blank(),
         panel.grid.major = element_blank(),
         legend.position = c(0.9, 0.12))
   
   View()
-  
+
   xgoals_mls25 |>
     mutate(xg = round(xg_shooter, digits = 2)) |>
     filter(pattern_of_play != "Penalty") |>
@@ -177,7 +182,3 @@ createPitch(x = 115, y = 80, grass_colour = black_hues[2], line_colour = black_h
       axis.title.y = element_text(hjust = 0),
       plot.caption = element_text(hjust = c(0,1))
     )
-?geom_rect
-  
-  sp1 |> filter(type_name_adj != "Shot") |> View()
-  
