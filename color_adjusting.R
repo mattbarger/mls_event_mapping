@@ -4,6 +4,10 @@
 ## Objective: maximize color contrast so every prescribed color reads well on a prescribed plot.
 ## 
 ## Step 1: Set up functions
+##
+## Get the libraries in there
+library(tidyverse)
+
 ## This converts R-named colors to hex codes.
 col2hex <- function(x, alpha = FALSE) {
   args <- as_tibble(t(col2rgb(x, alpha = alpha)))
@@ -41,7 +45,6 @@ adjust_color <- function(base_color, bg_color, ref_color, n_shades = 100, min_co
 ## Step 2: Example code. 
 ##
 ## The base colors from my template. See themes.R file for details.
-library(dplyr)
 ## This code should work off R color names as well, but col2hex() can convert those names as well.
 template_white <- col2hex('floralwhite')
 template_grass <- "#e6d9ce"
