@@ -1,5 +1,16 @@
+## Adjusting Colors for MLS teams (or any color really)
+## by Matt Barger
+## 
+## Objective: maximize color contrast so every prescribed color reads well on a prescribed plot.
+##
+## 
+## building the base colors
+## 
+
 lum_fw <- 250.3295
 lum_fb <- 24.4814
+grass_luminance <- col2rgb(black_hues[2])[1] * 0.2989 + col2rgb(black_hues[2])[2] * 0.587 +col2rgb(black_hues[2])[3] * 0.114 
+
 
 adj_color_darker <- function(color) {
   color_fix <- colorRampPalette(c(color, black_hues[10]))
@@ -22,6 +33,7 @@ adj_color_lighter <- function(color) {
     mutate(rgb = list(col2rgb(shade)), 
            luminance = 0.2989 * rgb[1] + 0.587 * rgb[2] + 0.114 * rgb[3], 
            contrast = abs(luminance - grass_luminance))  |>
+  ## Figure out which 
     filter(contrast < 190) |> ungroup() |> 
     arrange(-contrast) |>   select(shade) |> unlist() |> as.vector()
   return(adjusted_shade[[1]])
@@ -29,7 +41,7 @@ adj_color_lighter <- function(color) {
   rm(adjusted_shade)
 }
 
-grass_luminance <- col2rgb(black_hues[2])[1] * 0.2989 + col2rgb(black_hues[2])[2] * 0.587 +col2rgb(black_hues[2])[3] * 0.114 
+
 
 color_start <- team_index |> 
   rowwise() |> 
