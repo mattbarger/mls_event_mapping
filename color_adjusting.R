@@ -2,11 +2,8 @@
 ## by Matt Barger
 ## 
 ## Objective: maximize color contrast so every prescribed color reads well on a prescribed plot.
-##
-## building the base colors
-
-
-## Step 1: Functions
+## 
+## Step 1: Set up functions
 ## This converts R-named colors to hex codes.
 col2hex <- function(x, alpha = FALSE) {
   args <- as_tibble(t(col2rgb(x, alpha = alpha)))
