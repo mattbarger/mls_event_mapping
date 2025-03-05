@@ -1,18 +1,4 @@
 library(tidyverse)
-rm(list = ls())
-
-
-unzip('Data.Zip', exdir = "Source Data")
-
-csv_list <- list.files("Source Data", pattern = "\\.csv$")
-
-setwd("Source Data")
-
-csv_list |> 
-  purrr::imap(~ assign(gsub("\\.csv$", "\\1", .x),
-              read.csv(.x),
-              envir = .GlobalEnv)
-  )
 
 ### Isolate possessions where shots occurred
 shot_poss <- xgoals_mls25 |>
@@ -40,65 +26,7 @@ passes_per_shot_poss <- shot_poss |>
     sequence_xg = 1 - prod(1 - xg_shooter, na.rm = T),
     sequence_closest_shot = min(distance_from_goal_yds, na.rm = T)
   ) 
-
-shot_poss |> 
-  filter(game_id == 2497632, possession_chain_id == 55) |>
-  select(type_name_adj, shot_outcome, minute,second, pattern_of_play, event_id, asa_in_game_order, team_name) |>
-  arrange(asa_in_game_order)
-
-shot_poss |>
-  group_by(game_id, possession_team_id, possession_chain_id) |>
-  summarize(shots = n_distinct(xg_shooter, na.rm = T),
-            n = n_distinct(pattern_of_play, na.rm = T)) |>
-  arrange(-shots) |> 
-  filter(n > 1)
-  
-shot_poss |>
-  left_join(passes_per_shot_poss) |>
-  left_join(team_index |> select(possession_team_id = team_id, possession_team_name = team_name)) |>
-  group_by(game_id) |>
-  select(game_id, event_id, asa_in_game_order,possession_chain_id, possession_team_name,  sequence_comp_passes, sequence_shots, sequence_xg, 
-         team_name, player_name, type_name_adj, pattern_of_play, xg_shooter, shot_outcome,
-         x, y, x2, y2, primary_color, secondary_color, tertiary_color) |>
-  arrange(game_id, asa_in_game_order)
-
-games <- shot_poss |> distinct(game_id) |> unlist() |> as.vector() 
-
-shot_poss |>
-  filter(game_id == games[1], possession_team_id == 6977, team_id == 6977) |>
-  left_join(passes_per_shot_poss) |>
-  ggplot() +
-  geom_segment(aes(x = 1.15 * x, y = 0.8 * y,
-                   xend = 1.15 * x2, yend = 0.8 * y2, color = primary_color, alpha = sequence_xg),
-               size = 2,
-               arrow = arrow(length = unit(4, 'points'))) +
-  scale_color_identity() 
-  
-
-shot_poss |>
-  filter(!is.na(xg_shooter)) |>
-  left_join(passes_per_shot_poss) |>
-  select(player_name, team_short_name, possession_chain_id, xg_shooter, pattern_of_play, shot_outcome)
-
-shot_poss |>
-  filter(!is.na(xg_shooter)) |>
-  group_by(type_name) |> summarize(n = n())
-
-shot_poss |>
-  filter(game_id == games[2]) |>
-  distinct(team_id, team_name)
-shot_poss |>
-  filter(game_id == games[2], possession_team_id == 1616) |>
-  left_join(team_index |> select(possession_team_id = team_id, possession_team = team_name,
-                                 poss_primary = primary_color, poss_secondary = secondary_color)) |>
-  left_join(passes_per_shot_poss) |> 
-  arrange(-sequence_xg, asa_in_game_order) |> 
-  #filter(x != x2 & y != y2) |> 
-  group_by(possession_chain_id) |>
-  filter(asa_in_game_order == min(asa_in_game_order) & possession_team_id == team_id) |>
-  select(asa_in_game_order, sequence_xg, possession_chain_id, possession_team_id, minute, second, xg_shooter, team_name, player_name, type_name_adj, outcome, shot_outcome, 
-         x, y, x2, y2, primary_color, secondary_color, poss_primary, poss_secondary) |> View()
-
+sp1 |> filter(type_name_adj == "Shot") |> ungroup() |> summarize(n(), sum(xg_shooter))
 
 sp1 <- shot_poss |>
   left_join(team_index |> left_join(color_start) |>
@@ -106,7 +34,7 @@ sp1 <- shot_poss |>
                                  poss_primary = primary_adjusted, 
                      poss_secondary = secondary_adjusted)) |>
   left_join(passes_per_shot_poss) |> 
-  filter(poss_abbv == "TOR") |> filter(game_date == max(game_date)) |>
+  filter(poss_abbv == "MTL") |> filter(game_date == max(game_date)) |>
   arrange(-sequence_xg, asa_in_game_order) |> 
   #filter(x != x2 & y != y2) |> 
   group_by(possession_chain_id) |> 
@@ -119,6 +47,12 @@ sp1 <- shot_poss |>
   mutate(shot_outcome_shape = ifelse(shot_outcome == "Goal", 22,
                                      ifelse(shot_outcome == "Blocked", 15,
                                             ifelse(shot_outcome == "Saved", 16, 19))))
+
+sp1 |> ungroup() |> group_by(possession_chain_id) |> 
+  summarize(xg = max(sequence_xg), shots = sum(type_name_adj == "Shot")) |>
+  ungroup() |>
+  summarize(sum(xg), sum(shots))
+
 
 createPitch(x = 115, y = 80, grass_colour = black_hues[1], line_colour = black_hues[6]) +
   #ggplot() +
@@ -145,10 +79,16 @@ createPitch(x = 115, y = 80, grass_colour = black_hues[1], line_colour = black_h
   coord_flip() + scale_y_reverse() +
   guides(alpha = 'none', size = 'none') +
   theme_matt +
-  theme(aspect.ratio = 115/80,
+  theme(aspect.ratio = 105/80,
         axis.text = element_blank(), axis.title = element_blank(),
         panel.grid.major = element_blank(),
-        legend.position = c(0.9, 0.12))
+        legend.position = c(0.87, 0.12),
+        plot.caption = element_text(hjust = c(0,1))
+        ) +
+  labs(title = "Minnesota: Loons lively and direct",
+       subtitle = 'Possessions that created 1.94 xG from 14 shots, mapped',
+       caption = c('Points sized and lines shaded by shot xG','Viz: Matt Barger. Source: Opta'))
+                   
   
   View()
 

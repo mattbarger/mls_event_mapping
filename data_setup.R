@@ -7,7 +7,6 @@ library(tidyverse)
 library(DBI)
 library(RPostgres)
 options(scipen = 9999)
-readRenviron(".Renviron.sh")
 #Connect to the database
 conn <- DBI::dbConnect(RPostgres::Postgres(), 
                        dbname = Sys.getenv("ASA_dbname"), 
@@ -92,8 +91,8 @@ game_index <- dbGetQuery(
   conn = conn,
   "SELECT *
   FROM mls.games g
-  WHERE season_name = '2025'
-  and home_score IS NOT NULL"
+  --WHERE season_name = '2024'
+  WHERE home_score IS NOT NULL"
 )
 
 type_index <- dbGetQuery(
