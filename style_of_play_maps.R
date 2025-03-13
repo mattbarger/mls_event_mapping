@@ -45,9 +45,6 @@ events_mls24 |>
 styles_attack_season <- events_mls24 |>
   left_join(team_index |> select(possession_team_id = team_id, possession_team_name = team_abbreviation)) |>
   group_by(game_id, possession_chain_id, possession_team_id, possession_team_name) |>
-events_mls24 |>
-  left_join(team_index |> select(possession_team_id = team_id, possession_team_name = team_abbreviation)) |>
-  group_by(game_id, possession_chain_id, possession_team_name) |>
   filter(possession_team_id == team_id) |>
   left_join(type_index) |>
   mutate(elapsed_time = minute * 60 + second,
@@ -101,9 +98,6 @@ styles_attack_season <- events_mls24 |>
   select(game_id, team_id = possession_team_id, possession_team_name, z_speed, z_passes, attack_style) |>
   arrange(attack_style) 
 
-
-
-
 ppda_per_game <- events_mls24 |>
   left_join(game_index |> select(game_id, home_team_id, away_team_id)) |>
   left_join(type_index) |>
@@ -117,10 +111,6 @@ ppda_per_game <- events_mls24 |>
   arrange(ppda)
   select(game_id, team_id = defensive_team_id, team_name, ppda, passes_allowed, defensive_actions)
   
-  
-  left_join(styles_attack_season) |>
-  ggplot(aes(x = ppda,y = attack_style)) + geom_point()
-
 def_actions <- events_mls24 |>
   left_join(type_index) |>
   group_by(team_id, game_id) |>
