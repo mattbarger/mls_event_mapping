@@ -42,9 +42,15 @@ events_mls24 |>
   mutate(time = end_time - start_time - out_of_play) |> filter(time > 0) |>
   ungroup() |> View()
 
+<<<<<<< HEAD
 styles_attack_season <- events_mls24 |>
   left_join(team_index |> select(possession_team_id = team_id, possession_team_name = team_abbreviation)) |>
   group_by(game_id, possession_chain_id, possession_team_id, possession_team_name) |>
+=======
+events_mls24 |>
+  left_join(team_index |> select(possession_team_id = team_id, possession_team_name = team_abbreviation)) |>
+  group_by(game_id, possession_chain_id, possession_team_name) |>
+>>>>>>> 8c55757 (cleaned up charts for automation.)
   filter(possession_team_id == team_id) |>
   left_join(type_index) |>
   mutate(elapsed_time = minute * 60 + second,
@@ -55,6 +61,7 @@ styles_attack_season <- events_mls24 |>
             start_time = min(elapsed_time),
             end_time = max(elapsed_time),
             out_of_play = sum(out_of_play_secs, na.rm = T),
+<<<<<<< HEAD
   ) |> #filter(passes != 0) |>
   mutate(time = end_time - start_time - out_of_play) |> filter(time > 0) |>
   ungroup() |> 
@@ -147,6 +154,17 @@ styles_attack_season_2 <- styles_attack_season |> ungroup() |>
 
 
 styles_attack_season |>
+=======
+            ) |> #filter(passes != 0) |>
+  mutate(time = end_time - start_time - out_of_play) |> filter(time > 0) |>
+  ungroup() |> 
+  group_by(possession_team_name) |> 
+  #mutate(direct_speed = progress * 1.15/time) |>
+  summarize(passes_per_sequence = mean(passes), shots = sum(shots),
+            direct_velocity = sum(progress) * 1.15/sum(time)) |> 
+  #mutate( highlight_team = ifelse(possession_team_name == "LAFC", possession_team_name, "zzz")) |>
+  arrange(passes_per_sequence) |>
+>>>>>>> 8c55757 (cleaned up charts for automation.)
   ggplot(aes(x = passes_per_sequence, y = direct_velocity)) +
   geom_hline(yintercept = 1.89, color = black_hues[6], size = 1) +
   geom_vline(xintercept = 4.2, color = black_hues[6], size = 1) +

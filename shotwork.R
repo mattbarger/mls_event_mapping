@@ -133,4 +133,8 @@ createPitch(x = 115, y = 80, grass_colour = black_hues[1], line_colour = black_h
        subtitle = subtitle$subtitle,
        caption = c('Points sized by shot xG\nNon-goal possession chains shaded by sequence xG','Source: American Soccer Analysis\nViz: Matt Barger'))
                    
+<<<<<<< HEAD
   
+=======
+  
+>>>>>>> 8c55757 (cleaned up charts for automation.)
