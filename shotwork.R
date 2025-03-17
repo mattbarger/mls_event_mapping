@@ -35,7 +35,7 @@ sp1 <- shot_poss |>
                      poss_primary = primary_adjusted, 
                      poss_secondary = secondary_adjusted)) |>
   left_join(passes_per_shot_poss) |> 
-  filter(poss_abbv == "CHI") |> filter(game_date == max(game_date)) |>
+  filter(poss_abbv == "SD") |> filter(game_date == min(game_date)) |>
   arrange(-sequence_xg, asa_in_game_order) |> 
   #filter(x != x2 & y != y2) |> 
   group_by(possession_chain_id) |> 
@@ -132,3 +132,4 @@ createPitch(x = 115, y = 80, grass_colour = black_hues[1], line_colour = black_h
   labs(title = title,
        subtitle = subtitle$subtitle,
        caption = c('Points sized by shot xG\nNon-goal possession chains shaded by sequence xG','Source: American Soccer Analysis\nViz: Matt Barger'))
+

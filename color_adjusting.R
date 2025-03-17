@@ -60,8 +60,8 @@ team_index_colors_fixed <- team_index |>
     lum_s = luminance(secondary_color),
     contrast_lite_p = abs(lum_p - luminance(template_grass)),
     contrast_dark_p = abs(lum_p - luminance(template_black)),
-    contrast_lite_s = abs(lum_p - luminance(template_grass)),
-    contrast_dark_s = abs(lum_p - luminance(template_black))
+    contrast_lite_s = abs(lum_s - luminance(template_grass)),
+    contrast_dark_s = abs(lum_s - luminance(template_black))
   ) |>
   mutate(
     #This is where we adjust the colors for primary
